@@ -1,4 +1,4 @@
-import { CheckCircle } from "lucide-react"
+import { CheckCircle, Mail } from "lucide-react"
 import Link from "next/link"
 
 export default async function CheckoutSuccess() {
