@@ -100,11 +100,23 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 text-center">
+          <p className="font-sans text-sm text-muted-foreground">
+            Pas encore de compte?{" "}
+            <Link
+              href="/auth/signup"
+              className="font-medium text-primary hover:underline"
+            >
+              Creer un compte
+            </Link>
+          </p>
+        </div>
+
+        <div className="mt-4 text-center">
           <Link
             href="/"
             className="font-sans text-sm text-muted-foreground transition-colors hover:text-primary"
           >
-            ← Retour à l&apos;accueil
+            ← Retour a l&apos;accueil
           </Link>
         </div>
       </div>

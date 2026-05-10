@@ -1,7 +1,16 @@
 import { FormationHeader } from "@/components/formation-header"
 import { CourseContent } from "@/components/course-content"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
 
-export default function FormationPage() {
+export default async function FormationPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/auth/login")
+  }
+
   return (
     <div
       className="relative min-h-screen bg-cover bg-center bg-repeat"
@@ -10,7 +19,7 @@ export default function FormationPage() {
       <div className="absolute inset-0 z-0 bg-black/20" />
 
       <div className="relative z-10">
-        <FormationHeader email={"user@email.com"} />
+        <FormationHeader email={user.email || "Utilisateur"} />
 
         <main>
           <section className="py-10">
