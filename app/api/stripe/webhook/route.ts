@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       })
 
       await resend.emails.send({
-        from: "GoalPhaleo <onboarding@resend.dev>",
+       from: "GoalPhaleo <contact@goalphaleo.fr>",
         to: email,
         subject: "Vos accès Formation GoalPhaleo",
         html: `
