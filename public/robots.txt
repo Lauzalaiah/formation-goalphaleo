@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /formation
+Disallow: /admin
