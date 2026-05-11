@@ -6,7 +6,7 @@ import { FormationHeader } from "@/components/formation-header"
 import { CourseContent } from "@/components/course-content"
 
 export default async function FormationPage() {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,13 +15,13 @@ export default async function FormationPage() {
       cookies: {
         get(name: string) {
           return cookieStore.get(name)?.value
-        }
-      }
+        },
+      },
     }
   )
 
   const {
-    data: { user }
+    data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
