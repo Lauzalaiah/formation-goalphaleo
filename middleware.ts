@@ -1,3 +1,4 @@
+
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -71,4 +72,21 @@ export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
+
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { createClient } from "@supabase/supabase-js"
+
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("sb-access-token")
+
+  if (!token) {
+    return NextResponse.redirect(new URL("/auth/login", req.url))
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ["/formation/:path*"]
 }

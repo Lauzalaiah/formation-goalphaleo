@@ -1,5 +1,3 @@
-"use server"
-
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 
@@ -19,13 +17,14 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    // Translate common errors to French
     if (error.message.includes("Invalid login credentials")) {
       return { error: "Email ou mot de passe incorrect" }
     }
+
     if (error.message.includes("Email not confirmed")) {
       return { error: "Veuillez confirmer votre email avant de vous connecter" }
     }
+
     return { error: error.message }
   }
 
@@ -48,28 +47,30 @@ export async function signup(formData: FormData) {
   }
 
   if (password.length < 6) {
-    return { error: "Le mot de passe doit contenir au moins 6 caracteres" }
+    return { error: "Le mot de passe doit contenir au moins 6 caractères" }
   }
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://formation.goalphaleo.fr'}/auth/callback`,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://formation.goalphaleo.fr"}/auth/callback`,
     },
   })
 
   if (error) {
     if (error.message.includes("User already registered")) {
-      return { error: "Un compte existe deja avec cet email" }
+      return { error: "Un compte existe déjà avec cet email" }
     }
+
     if (error.message.includes("Email signups are disabled")) {
-      return { error: "Les inscriptions par email sont desactivees. Contactez l'administrateur." }
+      return { error: "Les inscriptions par email sont désactivées. Contactez l'administrateur." }
     }
+
     return { error: error.message }
   }
 
-  return { success: "Compte cree! Verifiez votre email pour confirmer votre inscription." }
+  return { success: "Compte créé ! Vérifiez votre email pour confirmer votre inscription." }
 }
 
 export async function logout() {
