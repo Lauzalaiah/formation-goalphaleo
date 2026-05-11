@@ -50,7 +50,12 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-black">
+    <main
+  className="min-h-screen flex items-center justify-center bg-cover bg-center"
+  style={{
+    backgroundImage: "url('/images/dollar-bg-bright.jpg')",
+  }}
+>
       <form
         onSubmit={handleLogin}
         className="bg-zinc-900 p-8 rounded-2xl w-[400px] space-y-4 border border-zinc-800"
