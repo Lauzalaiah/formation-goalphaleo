@@ -42,7 +42,7 @@ export function SalesContent() {
                 <DollarSign className="size-4 text-primary" />
               </div>
               <span className="rounded-full bg-primary/10 px-3 py-1 font-sans text-xs font-semibold uppercase tracking-wider text-primary">
-                GitHub Vercel project
+                Formation Premium
               </span>
             </div>
             <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground md:text-5xl lg:text-6xl">
@@ -206,7 +206,7 @@ export function SalesContent() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <p className="font-sans text-sm font-medium text-white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.9)' }}>
-              formation-goalphaleo &mdash; GitHub Vercel project.
+              Fansly Agency Mastery &mdash; Formation premium.
             </p>
             <p className="font-sans text-sm font-medium text-white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.9)' }}>
               Paiement securise via Stripe.
