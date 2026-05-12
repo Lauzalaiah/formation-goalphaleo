@@ -1,13 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { createClient } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,8 +12,26 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const supabaseConfigured = !!(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
+
+  const supabase = useMemo(() => {
+    if (!supabaseConfigured) return null
+    return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  }, [supabaseConfigured])
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
+
+    if (!supabase) {
+      setError("Supabase n'est pas configuré. Veuillez configurer les variables d'environnement.")
+      return
+    }
 
     setLoading(true)
     setError("")
@@ -51,11 +64,11 @@ export default function LoginPage() {
 
   return (
     <main
-  className="min-h-screen flex items-center justify-center bg-cover bg-center"
-  style={{
-    backgroundImage: "url('/images/dollar-bg-bright.jpg')",
-  }}
->
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/images/dollar-bg-bright.jpg')",
+      }}
+    >
       <form
         onSubmit={handleLogin}
         className="bg-zinc-900 p-8 rounded-2xl w-[400px] space-y-4 border border-zinc-800"
@@ -64,12 +77,19 @@ export default function LoginPage() {
           Connexion
         </h1>
 
+        {!supabaseConfigured && (
+          <div className="text-yellow-500 text-sm text-center p-3 bg-yellow-500/10 rounded">
+            Supabase n&apos;est pas configuré. Ajoutez les variables d&apos;environnement pour activer la connexion.
+          </div>
+        )}
+
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full p-3 rounded bg-zinc-800 text-white"
+          disabled={!supabaseConfigured}
         />
 
         <input
@@ -78,6 +98,7 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full p-3 rounded bg-zinc-800 text-white"
+          disabled={!supabaseConfigured}
         />
 
         {error && (
@@ -87,8 +108,8 @@ export default function LoginPage() {
         )}
 
         <button
-          disabled={loading}
-          className="w-full bg-yellow-600 hover:bg-yellow-500 p-3 rounded text-white font-bold"
+          disabled={loading || !supabaseConfigured}
+          className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed p-3 rounded text-white font-bold"
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>
