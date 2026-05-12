@@ -32,18 +32,3 @@ export async function POST(req: Request) {
     const headersList = await headers()
 
     const signature = headersList.get("stripe-signature")
-
-    if (!signature) {
-      return NextResponse.json(
-        { error: "Missing stripe signature" },
-        { status: 400 }
-      )
-    }
-
-    const event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    )
-
-    // reste du code inchangé
