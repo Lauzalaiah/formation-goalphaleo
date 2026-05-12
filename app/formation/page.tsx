@@ -29,14 +29,20 @@ export default async function FormationPage() {
   }
 
   const { data: profile } = await supabase
-    .from("profiles")
-    .select("has_access")
-    .eq("id", user.id)
-    .single()
+  .from("profiles")
+  .select("has_access, role")
+  .eq("id", user.id)
+  .single()
 
-  if (!profile?.has_access) {
-    redirect("/auth/login")
-  }
+if (
+  !profile ||
+  (
+    !profile.has_access &&
+    profile.role !== "admin"
+  )
+) {
+  redirect("/auth/login")
+}
 
   return (
     <div
