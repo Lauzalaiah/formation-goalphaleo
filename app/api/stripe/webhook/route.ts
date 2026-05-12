@@ -14,7 +14,6 @@ export async function POST(req: Request) {
 
     if (
       !stripeKey ||
-      !resendKey ||
       !supabaseUrl ||
       !supabaseKey ||
       !webhookSecret
@@ -27,7 +26,11 @@ export async function POST(req: Request) {
 
     const stripe = new Stripe(stripeKey)
 
-    const resend = new Resend(resendKey)
+    let resend: Resend | null = null
+
+    if (resendKey) {
+      resend = new Resend(resendKey)
+    }
 
     const supabase = createClient(
       supabaseUrl,
@@ -91,27 +94,29 @@ export async function POST(req: Request) {
         has_access: true,
       })
 
-      await resend.emails.send({
-        from: "GoalPhaleo <contact@goalphaleo.fr>",
-        to: email,
-        subject: "Vos accès Formation GoalPhaleo",
-        html: `
-          <h1>Bienvenue sur GoalPhaleo</h1>
+      if (resend) {
+        await resend.emails.send({
+          from: "GoalPhaleo <contact@goalphaleo.fr>",
+          to: email,
+          subject: "Vos accès Formation GoalPhaleo",
+          html: `
+            <h1>Bienvenue sur GoalPhaleo</h1>
 
-          <p>Votre accès à la formation est maintenant actif.</p>
+            <p>Votre accès à la formation est maintenant actif.</p>
 
-          <p><strong>Email :</strong> ${email}</p>
+            <p><strong>Email :</strong> ${email}</p>
 
-          <p><strong>Mot de passe :</strong> ${password}</p>
+            <p><strong>Mot de passe :</strong> ${password}</p>
 
-          <p>
-            Connexion :
-            <a href="https://formation.goalphaleo.fr/auth/login">
-              https://formation.goalphaleo.fr/auth/login
-            </a>
-          </p>
-        `,
-      })
+            <p>
+              Connexion :
+              <a href="https://formation.goalphaleo.fr/auth/login">
+                https://formation.goalphaleo.fr/auth/login
+              </a>
+            </p>
+          `,
+        })
+      }
 
       console.log("Utilisateur créé :", email)
     }
