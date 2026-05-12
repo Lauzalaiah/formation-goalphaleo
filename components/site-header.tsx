@@ -12,9 +12,9 @@ export function SiteHeader() {
           </div>
           <div>
             <h1 className="font-serif text-lg font-bold tracking-tight text-foreground">
-              Fansly Agency Mastery
+              formation-goalphaleo
             </h1>
-            <p className="text-xs text-muted-foreground">Formation Premium</p>
+            <p className="text-xs text-muted-foreground">GitHub Vercel project</p>
           </div>
         </div>
         <div />

@@ -15,8 +15,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Fansly Agency Mastery - Formation Premium',
-  description: 'Apprenez à gérer une agence Fansly de A à Z avec nos 10 modules de formation premium.',
+  title: 'formation-goalphaleo - GitHub Vercel project',
+  description: 'Formation complète pour maîtriser la gestion de votre projet avec GitHub et Vercel.',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
