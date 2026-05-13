@@ -42,10 +42,11 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setError("Email ou mot de passe incorrect.")
-      setLoading(false)
-      return
-    }
+  console.log(error)
+  setError(error.message)
+  setLoading(false)
+  return
+}
 
     const { data: profile } = await supabase
   .from("profiles")
