@@ -91,7 +91,7 @@ export default function LoginPage() {
 
       console.log("REDIRECT TO FORMATION")
 
-      window.location.replace("/formation")
+     window.location.assign("/formation")
 
     } catch (err) {
       console.log("GLOBAL ERROR", err)
