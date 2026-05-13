@@ -20,7 +20,7 @@ export default async function FormationPage() {
   )
 
   const user = {
-    email: "admin@local.test"
+    email: "galaxydroidlenny@gmail.com"
   }
 
   return (
