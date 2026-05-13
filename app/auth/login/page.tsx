@@ -2,10 +2,10 @@
 
 import { useState, useMemo } from "react"
 import { createClient } from "@supabase/supabase-js"
-import { useRouter } from "next/navigation"
+
 
 export default function LoginPage() {
-  const router = useRouter()
+  
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -48,16 +48,22 @@ export default function LoginPage() {
     }
 
     const { data: profile } = await supabase
-      .from("profiles")
-      .select("has_access")
-      .eq("id", data.user.id)
-      .single()
+  .from("profiles")
+  .select("has_access, role")
+  .eq("id", data.user.id)
+  .single()
 
-    if (!profile?.has_access) {
-      setError("Vous n'avez pas accès à la formation.")
-      setLoading(false)
-      return
-    }
+if (
+  !profile ||
+  (
+    !profile.has_access &&
+    profile.role !== "admin"
+  )
+) {
+  setError("Vous n'avez pas accès à la formation.")
+  setLoading(false)
+  return
+}
 
     window.location.href = "/formation"
   }
