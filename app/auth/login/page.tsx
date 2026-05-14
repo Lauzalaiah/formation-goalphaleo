@@ -1,84 +1,84 @@
 "use client"
 
 import { useState } from "react"
-import { createClient } from "@supabase/supabase-js"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { useRouter } from "next/navigation"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 export default function LoginPage() {
+  const router = useRouter()
+
+  const supabase = createClientComponentClient()
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
   async function handleLogin(e: React.FormEvent) {
-  e.preventDefault()
+    e.preventDefault()
 
-  if (loading) return
+    try {
+      setLoading(true)
+      setError("")
 
-  try {
-    console.log("Début login")
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    setLoading(true)
-    setError("")
+      console.log("Réponse auth :", data, error)
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
 
-    console.log("Réponse auth :", data, error)
+      const user = data.user
 
-    if (error) {
-      setError(error.message)
+      if (!user) {
+        setError("Utilisateur introuvable.")
+        setLoading(false)
+        return
+      }
+
+      console.log("Utilisateur connecté :", user.id)
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("has_access, role")
+        .eq("id", user.id)
+        .single()
+
+      console.log("Profil :", profile)
+      console.log("Erreur profil :", profileError)
+
+      if (profileError) {
+        setError("Erreur profil.")
+        setLoading(false)
+        return
+      }
+
+      if (
+        !profile ||
+        (!profile.has_access && profile.role !== "admin")
+      ) {
+        setError("Vous n'avez pas accès à la formation.")
+        setLoading(false)
+        return
+      }
+
+      await supabase.auth.refreshSession()
+
+      router.push("/formation")
+      router.refresh()
+
+    } catch (err) {
+      console.error(err)
+      setError("Erreur inattendue.")
       setLoading(false)
-      return
     }
-
-    if (!data.user) {
-      setError("Utilisateur introuvable.")
-      setLoading(false)
-      return
-    }
-
-    console.log("User connecté :", data.user.id)
-
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("has_access, role")
-      .eq("id", data.user.id)
-      .single()
-
-    console.log("Profil :", profile)
-    console.log("Erreur profil :", profileError)
-
-    if (profileError) {
-      setError("Erreur profil.")
-      setLoading(false)
-      return
-    }
-
-    if (
-      !profile ||
-      (!profile.has_access && profile.role !== "admin")
-    ) {
-      setError("Accès refusé.")
-      setLoading(false)
-      return
-    }
-
-    console.log("Redirection vers /formation")
-
-    window.location.href = "/formation"
-  } catch (err) {
-    console.error("Erreur globale :", err)
-    setError("Erreur inattendue.")
-    setLoading(false)
   }
-}
 
   return (
     <main
