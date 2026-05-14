@@ -16,25 +16,44 @@ export default async function FormationPage() {
         get(name: string) {
           return cookieStore.get(name)?.value
         },
+        set() {},
+        remove() {},
       },
     }
   )
 
+  // Vérifie la session Supabase
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession()
 
+  console.log("SESSION :", session)
+  console.log("SESSION ERROR :", sessionError)
+
+  const user = session?.user
+
+  // Si aucun utilisateur → login
   if (!user) {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase
+  // Vérifie le profil
+  const {
+    data: profile,
+    error: profileError,
+  } = await supabase
     .from("profiles")
     .select("has_access, role")
     .eq("id", user.id)
     .single()
 
+  console.log("PROFILE :", profile)
+  console.log("PROFILE ERROR :", profileError)
+
+  // Vérifie accès
   if (
+    profileError ||
     !profile ||
     (
       !profile.has_access &&
@@ -47,7 +66,9 @@ export default async function FormationPage() {
   return (
     <div
       className="relative min-h-screen bg-cover bg-center bg-repeat"
-      style={{ backgroundImage: "url('/images/dollar-bg-bright.jpg')" }}
+      style={{
+        backgroundImage: "url('/images/dollar-bg-bright.jpg')",
+      }}
     >
       <div className="absolute inset-0 z-0 bg-black/20" />
 
