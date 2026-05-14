@@ -15,60 +15,70 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
+  e.preventDefault()
 
-    if (loading) return
+  if (loading) return
 
-    try {
-      setLoading(true)
-      setError("")
+  try {
+    console.log("Début login")
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+    setLoading(true)
+    setError("")
 
-      if (error) {
-        setError(error.message)
-        setLoading(false)
-        return
-      }
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-      if (!data.user) {
-        setError("Utilisateur introuvable.")
-        setLoading(false)
-        return
-      }
+    console.log("Réponse auth :", data, error)
 
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("has_access, role")
-        .eq("id", data.user.id)
-        .single()
-
-      if (profileError) {
-        console.error(profileError)
-        setError("Erreur profil.")
-        setLoading(false)
-        return
-      }
-
-      if (
-        !profile ||
-        (!profile.has_access && profile.role !== "admin")
-      ) {
-        setError("Vous n'avez pas accès à la formation.")
-        setLoading(false)
-        return
-      }
-
-      window.location.href = "/formation"
-    } catch (err) {
-      console.error(err)
-      setError("Erreur inattendue.")
+    if (error) {
+      setError(error.message)
       setLoading(false)
+      return
     }
+
+    if (!data.user) {
+      setError("Utilisateur introuvable.")
+      setLoading(false)
+      return
+    }
+
+    console.log("User connecté :", data.user.id)
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("has_access, role")
+      .eq("id", data.user.id)
+      .single()
+
+    console.log("Profil :", profile)
+    console.log("Erreur profil :", profileError)
+
+    if (profileError) {
+      setError("Erreur profil.")
+      setLoading(false)
+      return
+    }
+
+    if (
+      !profile ||
+      (!profile.has_access && profile.role !== "admin")
+    ) {
+      setError("Accès refusé.")
+      setLoading(false)
+      return
+    }
+
+    console.log("Redirection vers /formation")
+
+    window.location.href = "/formation"
+  } catch (err) {
+    console.error("Erreur globale :", err)
+    setError("Erreur inattendue.")
+    setLoading(false)
   }
+}
 
   return (
     <main
