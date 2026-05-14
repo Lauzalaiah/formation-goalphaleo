@@ -1,11 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function LoginPage() {
-  const supabase = createClientComponentClient()
-
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -13,6 +16,8 @@ export default function LoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
+
+    if (loading) return
 
     try {
       setLoading(true)
@@ -25,11 +30,13 @@ export default function LoginPage() {
 
       if (error) {
         setError(error.message)
+        setLoading(false)
         return
       }
 
       if (!data.user) {
         setError("Utilisateur introuvable.")
+        setLoading(false)
         return
       }
 
@@ -41,29 +48,24 @@ export default function LoginPage() {
 
       if (profileError) {
         console.error(profileError)
-        setError(profileError.message)
+        setError("Erreur profil.")
+        setLoading(false)
         return
       }
 
       if (
         !profile ||
-        (
-          !profile.has_access &&
-          profile.role !== "admin"
-        )
+        (!profile.has_access && profile.role !== "admin")
       ) {
         setError("Vous n'avez pas accès à la formation.")
+        setLoading(false)
         return
       }
 
-      // IMPORTANT
-      // Recharge propre avec session Supabase active
       window.location.href = "/formation"
-
-    } catch (err: any) {
+    } catch (err) {
       console.error(err)
-      setError(err.message || "Erreur inattendue.")
-    } finally {
+      setError("Erreur inattendue.")
       setLoading(false)
     }
   }
@@ -108,7 +110,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed p-3 rounded text-white font-bold"
+          className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 p-3 rounded text-white font-bold"
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>
