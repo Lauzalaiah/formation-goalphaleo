@@ -25,17 +25,14 @@ export default function LoginPage() {
 
       if (error) {
         setError(error.message)
-        setLoading(false)
         return
       }
 
       if (!data.user) {
         setError("Utilisateur introuvable.")
-        setLoading(false)
         return
       }
 
-      // Vérification accès profil
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("has_access, role")
@@ -44,8 +41,7 @@ export default function LoginPage() {
 
       if (profileError) {
         console.error(profileError)
-        setError("Erreur profil.")
-        setLoading(false)
+        setError(profileError.message)
         return
       }
 
@@ -57,16 +53,17 @@ export default function LoginPage() {
         )
       ) {
         setError("Vous n'avez pas accès à la formation.")
-        setLoading(false)
         return
       }
 
-      // Redirection propre
+      // IMPORTANT
+      // Recharge propre avec session Supabase active
       window.location.href = "/formation"
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      setError("Erreur inattendue.")
+      setError(err.message || "Erreur inattendue.")
+    } finally {
       setLoading(false)
     }
   }
@@ -111,7 +108,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 p-3 rounded text-white font-bold"
+          className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed p-3 rounded text-white font-bold"
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>
