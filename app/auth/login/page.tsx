@@ -14,39 +14,61 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
 
-    setLoading(true)
-    setError("")
+    try {
+      setLoading(true)
+      setError("")
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (error) {
-      setError(error.message)
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+
+      if (!data.user) {
+        setError("Utilisateur introuvable.")
+        setLoading(false)
+        return
+      }
+
+      // Vérification accès profil
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("has_access, role")
+        .eq("id", data.user.id)
+        .single()
+
+      if (profileError) {
+        console.error(profileError)
+        setError("Erreur profil.")
+        setLoading(false)
+        return
+      }
+
+      if (
+        !profile ||
+        (
+          !profile.has_access &&
+          profile.role !== "admin"
+        )
+      ) {
+        setError("Vous n'avez pas accès à la formation.")
+        setLoading(false)
+        return
+      }
+
+      // Redirection propre
+      window.location.href = "/formation"
+
+    } catch (err) {
+      console.error(err)
+      setError("Erreur inattendue.")
       setLoading(false)
-      return
     }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("has_access, role")
-      .eq("id", data.user.id)
-      .single()
-
-    if (
-      !profile ||
-      (
-        !profile.has_access &&
-        profile.role !== "admin"
-      )
-    ) {
-      setError("Vous n'avez pas accès à la formation.")
-      setLoading(false)
-      return
-    }
-
-    window.location.href = "/formation"
   }
 
   return (
@@ -87,6 +109,7 @@ export default function LoginPage() {
         )}
 
         <button
+          type="submit"
           disabled={loading}
           className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 p-3 rounded text-white font-bold"
         >
