@@ -70,7 +70,8 @@ export default function LoginPage() {
         setLoading(false)
         return
       }
-
+      
+      setLoading(false)
       router.push("/formation")
 
     } catch (err) {
