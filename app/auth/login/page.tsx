@@ -45,11 +45,16 @@ export default function LoginPage() {
         return
       }
 
+      console.log("Utilisateur connecté :", user.id)
+
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("has_access, role")
         .eq("id", user.id)
         .single()
+
+      console.log("Profil :", profile)
+      console.log("Erreur profil :", profileError)
 
       if (profileError) {
         setError("Erreur profil.")
