@@ -67,10 +67,10 @@ export default function LoginPage() {
         (!profile.has_access && profile.role !== "admin")
       ) {
         setError("Vous n'avez pas accès à la formation.")
-        setLoading(false)
         return
       }
-      
+
+      setLoading(false)
       setLoading(false)
       router.push("/formation")
 
