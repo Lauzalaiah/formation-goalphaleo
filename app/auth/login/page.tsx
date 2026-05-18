@@ -71,8 +71,6 @@ export default function LoginPage() {
         return
       }
 
-      await supabase.auth.refreshSession()
-
       router.push("/formation")
       router.refresh()
 
