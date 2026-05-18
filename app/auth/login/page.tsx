@@ -33,7 +33,6 @@ export default function LoginPage() {
 
       if (error) {
         setError(error.message)
-        setLoading(false)
         return
       }
 
@@ -41,7 +40,6 @@ export default function LoginPage() {
 
       if (!user) {
         setError("Utilisateur introuvable.")
-        setLoading(false)
         return
       }
 
@@ -58,7 +56,6 @@ export default function LoginPage() {
 
       if (profileError) {
         setError("Erreur profil.")
-        setLoading(false)
         return
       }
 
@@ -67,7 +64,6 @@ export default function LoginPage() {
         (!profile.has_access && profile.role !== "admin")
       ) {
         setError("Vous n'avez pas accès à la formation.")
-        setLoading(false)
         return
       }
 
@@ -77,7 +73,6 @@ export default function LoginPage() {
     } catch (err) {
       console.error(err)
       setError("Erreur inattendue.")
-      setLoading(false)
     }
   }
 
