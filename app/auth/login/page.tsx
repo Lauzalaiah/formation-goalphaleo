@@ -72,7 +72,6 @@ export default function LoginPage() {
       }
 
       router.push("/formation")
-      router.refresh()
 
     } catch (err) {
       console.error(err)
