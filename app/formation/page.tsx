@@ -1,7 +1,34 @@
+import { redirect } from "next/navigation"
+import { createClient } from "@/lib/supabase/server"
 import { FormationHeader } from "@/components/formation-header"
 import { CourseContent } from "@/components/course-content"
 
 export default async function FormationPage() {
+  const supabase = await createClient()
+
+  if (!supabase) {
+    redirect("/auth/login")
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/auth/login")
+  }
+
+  // Vérifier l'accès dans la table profiles
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("has_access, role")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile?.has_access) {
+    redirect("/auth/login")
+  }
+
   return (
     <div
       className="relative min-h-screen bg-cover bg-center bg-repeat"
@@ -10,7 +37,7 @@ export default async function FormationPage() {
       <div className="absolute inset-0 z-0 bg-black/20" />
 
       <div className="relative z-10">
-        <FormationHeader email="admin@goalphaleo.fr" />
+        <FormationHeader email={user.email || "Utilisateur"} />
 
         <main>
           <section className="py-10">
