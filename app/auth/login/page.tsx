@@ -1,12 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@supabase/ssr"
 
 export default function LoginPage() {
-  const router = useRouter()
-
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -29,8 +26,6 @@ export default function LoginPage() {
         password,
       })
 
-      console.log("Réponse auth :", data, error)
-
       if (error) {
         setError(error.message)
         setLoading(false)
@@ -45,22 +40,11 @@ export default function LoginPage() {
         return
       }
 
-      console.log("Utilisateur connecté :", user.id)
-
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile } = await supabase
         .from("profiles")
         .select("has_access, role")
         .eq("id", user.id)
         .single()
-
-      console.log("Profil :", profile)
-      console.log("Erreur profil :", profileError)
-
-      if (profileError) {
-        setError("Erreur profil.")
-        setLoading(false)
-        return
-      }
 
       if (
         !profile ||
@@ -71,8 +55,7 @@ export default function LoginPage() {
         return
       }
 
-      setLoading(false)
-      window.location.href = "/formation"
+      window.location.replace("/formation")
 
     } catch (err) {
       console.error(err)
