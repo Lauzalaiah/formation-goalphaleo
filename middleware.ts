@@ -5,5 +5,5 @@ export async function middleware() {
 }
 
 export const config = {
-  matcher: ["/formation/:path*"]
+  matcher: ["/formation/:path*"],
 }
