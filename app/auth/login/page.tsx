@@ -40,7 +40,11 @@ export default function LoginPage() {
         return
       }
 
-      window.location.replace("/formation")
+      // Petit délai pour s'assurer que les cookies sont bien écrits
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      
+      // Forcer la redirection avec rechargement complet
+      window.location.href = "/formation"
       return 
 
     } catch (err) {
