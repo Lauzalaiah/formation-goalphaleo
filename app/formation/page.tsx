@@ -1,14 +1,24 @@
 import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
+import { cookies } from "next/headers"
+import { createServerClient } from "@supabase/ssr"
+
 import { FormationHeader } from "@/components/formation-header"
 import { CourseContent } from "@/components/course-content"
 
 export default async function FormationPage() {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
 
-  if (!supabase) {
-    redirect("/auth/login")
-  }
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+      },
+    }
+  )
 
   const {
     data: { user },
@@ -18,14 +28,16 @@ export default async function FormationPage() {
     redirect("/auth/login")
   }
 
-  // Vérifier l'accès dans la table profiles
   const { data: profile } = await supabase
     .from("profiles")
     .select("has_access, role")
     .eq("id", user.id)
     .single()
 
-  if (!profile?.has_access) {
+  if (
+    !profile ||
+    (!profile.has_access && profile.role !== "admin")
+  ) {
     redirect("/auth/login")
   }
 
@@ -37,7 +49,7 @@ export default async function FormationPage() {
       <div className="absolute inset-0 z-0 bg-black/20" />
 
       <div className="relative z-10">
-        <FormationHeader email={user.email || "Utilisateur"} />
+        <FormationHeader email={user.email || ""} />
 
         <main>
           <section className="py-10">
