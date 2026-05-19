@@ -72,7 +72,7 @@ export default function LoginPage() {
       }
 
       setLoading(false)
-      router.push("/formation")
+      window.location.href = "/formation"
 
     } catch (err) {
       console.error(err)
