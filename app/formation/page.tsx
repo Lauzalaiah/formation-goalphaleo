@@ -1,43 +1,7 @@
-import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
-import { createServerClient } from "@supabase/ssr"
-
 import { FormationHeader } from "@/components/formation-header"
 import { CourseContent } from "@/components/course-content"
 
 export default async function FormationPage() {
-  const cookieStore = await cookies()
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-      },
-    }
-  )
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect("/auth/login")
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("has_access")
-    .eq("id", user.id)
-    .single()
-
-  if (!profile?.has_access) {
-    redirect("/auth/login")
-  }
-
   return (
     <div
       className="relative min-h-screen bg-cover bg-center bg-repeat"
@@ -46,7 +10,7 @@ export default async function FormationPage() {
       <div className="absolute inset-0 z-0 bg-black/20" />
 
       <div className="relative z-10">
-        <FormationHeader email={user.email || ""} />
+        <FormationHeader email="admin@goalphaleo.fr" />
 
         <main>
           <section className="py-10">
