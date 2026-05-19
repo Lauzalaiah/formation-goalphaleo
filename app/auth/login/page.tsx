@@ -93,8 +93,9 @@ export default function LoginPage() {
           </div>
         )}
 
-        <button
-          type="submit"
+       <button
+  onClick={handleLogin}
+  type="button"
           disabled={loading}
           className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 p-3 rounded text-white font-bold"
         >
