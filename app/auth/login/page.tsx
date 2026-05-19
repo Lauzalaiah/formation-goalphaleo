@@ -40,22 +40,8 @@ export default function LoginPage() {
         return
       }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("has_access, role")
-        .eq("id", user.id)
-        .single()
-
-      if (
-        !profile ||
-        (!profile.has_access && profile.role !== "admin")
-      ) {
-        setError("Vous n'avez pas accès à la formation.")
-        setLoading(false)
-        return
-      }
-
       window.location.replace("/formation")
+      return 
 
     } catch (err) {
       console.error(err)
