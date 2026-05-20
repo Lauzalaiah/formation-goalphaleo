@@ -1,9 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@supabase/ssr"
 
 export default function LoginPage() {
+  const router = useRouter()
+
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -14,10 +17,8 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
-  async function handleLogin(e: any) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
-
-    console.log("LOGIN CLICK")
 
     try {
       setLoading(true)
@@ -34,20 +35,21 @@ export default function LoginPage() {
         return
       }
 
-      const user = data.user
-
-      if (!user) {
+      if (!data.user) {
         setError("Utilisateur introuvable.")
         setLoading(false)
         return
       }
 
-      // Petit délai pour s'assurer que les cookies sont bien écrits
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      
-      // Forcer la redirection avec rechargement complet
+      // attendre que Supabase écrive la session
+      await supabase.auth.getSession()
+
+      // petit délai sécurité
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      router.refresh()
+
       window.location.href = "/formation"
-      return 
 
     } catch (err) {
       console.error(err)
@@ -93,9 +95,8 @@ export default function LoginPage() {
           </div>
         )}
 
-       <button
-  onClick={handleLogin}
-  type="button"
+        <button
+          type="submit"
           disabled={loading}
           className="w-full bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 p-3 rounded text-white font-bold"
         >
